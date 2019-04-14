@@ -1,0 +1,18 @@
+App\Domain\Entity\User:
+    type: entity
+    repositoryClass: App\Repository\UserRepository
+    id:
+        id:
+            type: uuid
+            generator:
+                strategy: NONE
+    fields:
+        name:
+            type: string
+            length: 255
+        email:
+            type: string
+            length: 255
+            unique: true
+        companyId:
+            type: uuid
