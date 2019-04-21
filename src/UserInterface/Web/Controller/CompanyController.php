@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\UserInterface\Symfony\Controller;
+namespace App\UserInterface\Web\Controller;
 
-use App\Application\Command\ConfirmUserCreationWithSmsCommand;
-use App\Application\Command\CreateUserCommand;
+use App\Application\Command\CreateCompanyCommand;
 use App\Application\Exception\CommandHandlerException;
 use App\Application\Exception\InvalidCommandException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-class UserController extends AbstractController
+class CompanyController extends AbstractController
 {
     private $commandBus;
 
@@ -22,7 +21,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/create")
+     * @Route("/company/create")
      */
     public function create(Request $request)
     {
@@ -33,7 +32,7 @@ class UserController extends AbstractController
         $requestData = json_decode($request->getContent(), true);
 
         try {
-            $createUserCommand = CreateUserCommand::createFromArray($requestData);
+            $createCompanyCommand = CreateCompanyCommand::createFromArray($requestData);
         } catch (InvalidCommandException $e) {
             return $this->json([
                 'error' => $e->getMessage(),
@@ -41,23 +40,13 @@ class UserController extends AbstractController
         }
 
         try {
-            $this->commandBus->dispatch($createUserCommand);
+            $this->commandBus->dispatch($createCompanyCommand);
         } catch (CommandHandlerException $e) {
             return $this->json([
                 'error' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        try {
-            $sendSmsCommand = ConfirmUserCreationWithSmsCommand::createFromArray($requestData);
-            $this->commandBus->dispatch($createUserCommand);
-        } catch (InvalidCommandException $e) {
-        } catch (CommandHandlerException $e) {
-            // TODO: log error
-        }
-
-        return $this->json([
-            'msg' => 'User created.',
-        ]);
+        return $this->json([], Response::HTTP_CREATED);
     }
 }

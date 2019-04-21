@@ -9,6 +9,10 @@ class SmsSender implements SmsSenderInterface
     public function send(int $phone, string $message): void
     {
         // TODO: send sms
-        echo 'Send SMS';
+        echo sprintf(
+            'Send SMS "%s" to phone "%s".',
+            $message,
+            $phone
+        );
     }
 }

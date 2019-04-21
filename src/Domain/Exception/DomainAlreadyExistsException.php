@@ -2,7 +2,7 @@
 
 namespace App\Domain\Exception;
 
-class DomainAlreadyExistsException extends WriteException
+class DomainAlreadyExistsException extends DomainException
 {
     public static function createForEntity(string $domain, string $entity): self
     {

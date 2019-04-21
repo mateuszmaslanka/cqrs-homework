@@ -2,15 +2,13 @@
 
 namespace App\Domain\Repository;
 
-use App\Domain\Entity\User;
 use App\Domain\Exception\EmailAlreadyExistsException;
-use App\Domain\Exception\WriteException;
+use App\Domain\WriteModel\User;
 
-interface UserWriteInterface
+interface UsersInterface
 {
     /**
      * @throws EmailAlreadyExistsException
-     * @throws WriteException
      */
     public function add(User $user): void;
 }

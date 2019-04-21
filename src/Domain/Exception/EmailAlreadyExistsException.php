@@ -4,7 +4,7 @@ namespace App\Domain\Exception;
 
 use WMDE\EmailAddress\EmailAddress;
 
-class EmailAlreadyExistsException extends WriteException
+class EmailAlreadyExistsException extends DomainException
 {
     public static function createForEntity(EmailAddress $email, string $entity): self
     {

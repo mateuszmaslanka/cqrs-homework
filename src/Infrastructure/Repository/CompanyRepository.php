@@ -2,65 +2,80 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\Entity\Company;
 use App\Domain\Exception\DomainAlreadyExistsException;
-use App\Domain\Exception\EntityNotFoundException;
-use App\Domain\Exception\WriteException;
-use App\Domain\Repository\CompanyReadInterface;
-use App\Domain\Repository\CompanyWriteInterface;
+use App\Domain\Repository\CompaniesInterface;
+use App\Domain\WriteModel\Company;
+use App\Infrastructure\Exception\RuntimeException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
 
-class CompanyRepository extends EntityRepository implements CompanyReadInterface, CompanyWriteInterface
+class CompanyRepository extends EntityRepository implements CompaniesInterface
 {
     /**
      * @inheritDoc
+     * @throws RuntimeException
      */
     public function add(Company $company): void
     {
         $em = $this->getEntityManager();
 
-        $em->beginTransaction();
         try {
             $em->persist($company);
             $em->flush($company);
         } catch (UniqueConstraintViolationException $e) {
-            $em->rollback();
-
             throw DomainAlreadyExistsException::createForEntity($company->domain(), Company::class);
         } catch (\Exception $e) {
-            $em->rollback();
-
-            throw new WriteException('Cannot save company to database.', 0, $e);
+            throw new RuntimeException('Cannot save company to database.', 0, $e);
         }
-
-        $em->commit();
     }
 
     /**
-     * @inheritDoc
+     * @throws RuntimeException
      */
-    public function findByDomain(string $domain): Company
+    public function increaseUserCounterWithDomain(string $domain): void
     {
-        $criteria = [
-            'domain' => $domain,
-        ];
+        $connection = $this->getEntityManager()->getConnection();
 
-        /** @var Company $company */
-        $company = $this->findOneBy($criteria);
+        try {
+            $query = $connection->prepare('
+                UPDATE
+                    company
+                SET
+                    user_counter = user_counter + 1
+                WHERE domain = :domain
+            ');
 
-        if (!$company) {
-            throw EntityNotFoundException::createForEntity(Company::class, $criteria);
+            $query->execute([
+                'domain' => $domain,
+            ]);
+        } catch (\Exception $e) {
+            throw new RuntimeException('Cannot access database.', 0, $e);
         }
-
-        return $company;
     }
 
     /**
-     * @inheritDoc
+     * @throws RuntimeException
      */
-    public function increaseUserCounter(Company $company): void
+    public function canAddUserWithDomain(string $domain): bool
     {
-        // TODO: Implement increaseUserCounter() method.
+        $connection = $this->getEntityManager()->getConnection();
+
+        try {
+            $canAdd = (bool)$connection->executeQuery('
+                SELECT
+                    count(1)
+                FROM
+                    company
+                WHERE
+                    domain = :domain
+                    AND user_limit > user_counter
+            ', [
+                'domain' => $domain,
+            ])->fetchColumn(0);
+        } catch (\Exception $e) {
+            throw new RuntimeException('Cannot access database.', 0, $e);
+        }
+
+        return $canAdd;
     }
 }

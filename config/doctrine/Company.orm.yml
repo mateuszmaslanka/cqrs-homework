@@ -1,4 +1,4 @@
-App\Domain\Entity\Company:
+App\Domain\WriteModel\Company:
     type: entity
     repositoryClass: App\Infrastructure\Repository\CompanyRepository
     id:

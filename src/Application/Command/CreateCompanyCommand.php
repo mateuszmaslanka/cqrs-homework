@@ -33,7 +33,7 @@ class CreateCompanyCommand
         }
 
         $domain = (string)$data['domain'];
-        $userLimit = (int)['userLimit'];
+        $userLimit = (int)$data['userLimit'];
 
         return new self($domain, $userLimit);
     }

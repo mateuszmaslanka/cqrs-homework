@@ -4,31 +4,25 @@ namespace App\Application\Handler;
 
 use App\Application\Command\CreateUserCommand;
 use App\Application\Exception\CommandHandlerException;
-use App\Domain\Entity\User;
-use App\Domain\Exception\DomainException;
 use App\Domain\Exception\EmailAlreadyExistsException;
-use App\Domain\Exception\EntityNotFoundException;
-use App\Domain\Repository\CompanyReadInterface;
-use App\Domain\Repository\CompanyWriteInterface;
-use App\Domain\Repository\UserWriteInterface;
+use App\Domain\Repository\CompaniesInterface;
+use App\Domain\Repository\UsersInterface;
+use App\Domain\WriteModel\User;
+use App\Infrastructure\Exception\InfrastructureException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class CreateUserHandler implements MessageHandlerInterface
 {
-    /** @var UserWriteInterface */
+    /** @var UsersInterface */
     private $users;
 
-    /** @var CompanyReadInterface */
+    /** @var CompaniesInterface */
     private $companies;
 
-    /** @var CompanyWriteInterface */
-    private $companyRepository;
-
-    public function __construct(UserWriteInterface $users, CompanyReadInterface $companies, CompanyWriteInterface $companyRepository)
+    public function __construct(UsersInterface $users, CompaniesInterface $companies)
     {
         $this->users = $users;
         $this->companies = $companies;
-        $this->companyRepository = $companyRepository;
     }
 
     /**
@@ -36,26 +30,25 @@ class CreateUserHandler implements MessageHandlerInterface
      */
     public function __invoke(CreateUserCommand $command): void
     {
-        try {
-            $company = $this->companies->findByDomain($command->email()->getDomain());
-        } catch (EntityNotFoundException $e) {
-            throw new CommandHandlerException('Company does not exist.', 0, $e);
-        }
+        $domain = $command->email()->getDomain();
 
-        if ($company->isUserLimitReached()) {
-            throw new CommandHandlerException('User limit reached.');
+        try {
+            if (!$this->companies->canAddUserWithDomain($domain)) {
+                throw new CommandHandlerException('Cannot create user with this domain.');
+            };
+        } catch (InfrastructureException $e) {
+            throw new CommandHandlerException('Cannot create user.', 0, $e);
         }
 
         $user = User::createNew($command->name(), $command->email(), $command->phone());
 
         try {
-            // TODO: transaction (?)
             $this->users->add($user);
-            $this->companyRepository->increaseUserCounter($company);
+            $this->companies->increaseUserCounterWithDomain($domain);
         } catch (EmailAlreadyExistsException $e) {
             throw new CommandHandlerException('User already exists.', 0, $e);
-        } catch (DomainException $e) {
-            throw new CommandHandlerException('Cannot add user.', 0, $e);
+        } catch (InfrastructureException $e) {
+            throw new CommandHandlerException('Cannot create user.', 0, $e);
         }
     }
 }

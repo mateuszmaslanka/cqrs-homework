@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Entity;
+namespace App\Domain\WriteModel;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -30,11 +30,6 @@ class Company
     public static function createNew(string $domain, int $userLimit): self
     {
         return new self(Uuid::uuid4(), $domain, $userLimit, 0);
-    }
-
-    public function isUserLimitReached(): bool
-    {
-        return $this->userCounter >= $this->userLimit;
     }
 
     public function domain()

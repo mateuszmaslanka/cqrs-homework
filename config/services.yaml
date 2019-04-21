@@ -15,12 +15,12 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/{DependencyInjection,Entity,WriteModel,Migrations,Tests,Kernel.php}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
-    App\UserInterface\Symfony\Controller\:
-        resource: '../src/UserInterface/Symfony/Controller'
+    App\UserInterface\Web\Controller\:
+        resource: '../src/UserInterface/Web/Controller'
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
@@ -29,12 +29,12 @@ services:
     App\Infrastructure\Repository\UserRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
-            - App\Domain\Entity\User
+            - App\Domain\WriteModel\User
 
     App\Infrastructure\Repository\CompanyRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
-            - App\Domain\Entity\Company
+            - App\Domain\WriteModel\Company
 
     App\Application\Handler\:
         resource: '../src/Application/Handler/*Handler.php'
