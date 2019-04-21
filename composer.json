@@ -14,7 +14,8 @@
         "symfony/framework-bundle": "4.2.*",
         "symfony/messenger": "4.2.*",
         "symfony/orm-pack": "^1.0",
-        "symfony/yaml": "4.2.*"
+        "symfony/yaml": "4.2.*",
+        "wmde/email-address": "^1.0"
     },
     "config": {
         "preferred-install": {

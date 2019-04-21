@@ -2,6 +2,6 @@
 
 namespace App\Domain\Exception;
 
-class AddUserException extends UserException
+class WriteException extends DomainException
 {
 }

@@ -19,18 +19,23 @@ services:
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller'
+    App\UserInterface\Symfony\Controller\:
+        resource: '../src/UserInterface/Symfony/Controller'
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Repository\UserRepository:
-        factory: ['@doctrine', getRepository]
+    App\Infrastructure\Repository\UserRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - App\Domain\Entity\User
 
-    App\Application\Command\:
-        resource: '../src/Application/Command/*Handler.php'
+    App\Infrastructure\Repository\CompanyRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - App\Domain\Entity\Company
+
+    App\Application\Handler\:
+        resource: '../src/Application/Handler/*Handler.php'
         tags: [messenger.message_handler]

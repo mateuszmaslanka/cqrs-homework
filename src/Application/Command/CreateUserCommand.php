@@ -2,49 +2,52 @@
 
 namespace App\Application\Command;
 
-use Ramsey\Uuid\Exception\InvalidUuidStringException;
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\HttpFoundation\Request;
+use App\Application\Exception\InvalidCommandException;
+use App\Application\Exception\InvalidArgumentException;
+use WMDE\EmailAddress\EmailAddress;
 
 class CreateUserCommand
 {
+    /** @var string */
     private $name;
-    private $email;
-    private $companyId;
 
-    private function __construct(string $name, string $email, UuidInterface $companyId)
+    /** @var EmailAddress */
+    private $email;
+
+    /** @var int */
+    private $phone;
+
+    private function __construct(string $name, EmailAddress $email, ?int $phone)
     {
         $this->name = $name;
         $this->email = $email;
-        $this->companyId = $companyId;
+        $this->phone = $phone;
     }
 
     /**
      * @throws InvalidCommandException
      */
-    public static function createFromRequest(Request $request): self
+    public static function createFromArray(array $data): self
     {
-        if ('json' !== $request->getContentType()) {
-            throw new InvalidCommandException('Invalid request');
+        if (!array_key_exists('name', $data)) {
+            throw InvalidArgumentException::createForMissingParameter('name');
         }
 
-        $data = json_decode($request->getContent(), true);
-
-        $name = (string)($data['name'] ?? '');
-        $email = (string)($data['email'] ?? '');
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidCommandException('Invalid user email');
+        if (!array_key_exists('email', $data)) {
+            throw InvalidArgumentException::createForMissingParameter('email');
         }
+
+        $name = (string)$data['name'];
 
         try {
-            $companyId = Uuid::fromString($data['companyId'] ?? '');
-        } catch (InvalidUuidStringException $e) {
-            throw new InvalidCommandException('Invalid company id');
+            $email = new EmailAddress((string)$data['email']);
+        } catch (\InvalidArgumentException $e) {
+            throw InvalidCommandException::createForInvalidEmail();
         }
 
-        return new self($name, $email, $companyId);
+        $phone = array_key_exists('phone', $data) ? (int)$data['phone'] : null;
+
+        return new self($name, $email, $phone);
     }
 
     public function name(): string
@@ -52,13 +55,13 @@ class CreateUserCommand
         return $this->name;
     }
 
-    public function email(): string
+    public function email(): EmailAddress
     {
         return $this->email;
     }
 
-    public function companyId(): UuidInterface
+    public function phone(): ?int
     {
-        return $this->companyId;
+        return $this->phone;
     }
 }

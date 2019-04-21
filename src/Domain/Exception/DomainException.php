@@ -2,6 +2,6 @@
 
 namespace App\Domain\Exception;
 
-abstract class UserException extends \Exception
+class DomainException extends \Exception
 {
 }

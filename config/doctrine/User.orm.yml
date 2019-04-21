@@ -1,6 +1,6 @@
 App\Domain\Entity\User:
     type: entity
-    repositoryClass: App\Repository\UserRepository
+    repositoryClass: App\Infrastructure\Repository\UserRepository
     id:
         id:
             type: uuid
@@ -10,9 +10,15 @@ App\Domain\Entity\User:
         name:
             type: string
             length: 255
+            nullable: false
         email:
             type: string
             length: 255
             unique: true
-        companyId:
-            type: uuid
+            nullable: false
+        phone:
+            type: bigint
+            length:
+            nullable: true
+            options:
+                unsigned: true

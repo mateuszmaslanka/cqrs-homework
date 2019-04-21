@@ -3,10 +3,14 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Entity\User;
+use App\Domain\Exception\EmailAlreadyExistsException;
+use App\Domain\Exception\WriteException;
 
 interface UserWriteInterface
 {
-    const MAX_USERS_PER_COMPANY = 1;
-
-    public function add(User $user);
+    /**
+     * @throws EmailAlreadyExistsException
+     * @throws WriteException
+     */
+    public function add(User $user): void;
 }

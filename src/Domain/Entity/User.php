@@ -4,29 +4,37 @@ namespace App\Domain\Entity;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use WMDE\EmailAddress\EmailAddress;
 
 class User
 {
+    /** @var UuidInterface */
     private $id;
-    private $name;
-    private $email;
-    private $companyId;
 
-    private function __construct(Uuid $id, string $name, string $email, ?UuidInterface $companyId)
+    /** @var string */
+    private $name;
+
+    /** @var EmailAddress */
+    private $email;
+
+    /** @var int */
+    private $phone;
+
+    private function __construct(UuidInterface $id, string $name, EmailAddress $email, ?int $phone)
     {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
-        $this->companyId = $companyId;
+        $this->phone = $phone;
     }
 
-    public static function createUserWithCompany(string $name, string $email, UuidInterface $companyId): self
+    public static function createNew(string $name, EmailAddress $email, ?int $phone): self
     {
-        return new self(Uuid::uuid4(), $name, $email, $companyId);
+        return new self(Uuid::uuid4(), $name, $email, $phone);
     }
 
-    public function getCompanyId(): UuidInterface
+    public function email(): EmailAddress
     {
-        return $this->companyId;
+        return $this->email;
     }
 }

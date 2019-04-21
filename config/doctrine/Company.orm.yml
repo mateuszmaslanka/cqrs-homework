@@ -1,0 +1,25 @@
+App\Domain\Entity\Company:
+    type: entity
+    repositoryClass: App\Infrastructure\Repository\CompanyRepository
+    id:
+        id:
+            type: uuid
+            generator:
+                strategy: NONE
+    fields:
+        domain:
+            type: string
+            length: 255
+            unique: true
+            nullable: false
+        userLimit:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+        userCounter:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+                default: 0

@@ -1,0 +1,40 @@
+POST http://127.0.0.1:8000/company/create
+Content-Type: application/json
+
+{
+    "domain": "ibm.com",
+    "userLimit": "1"
+}
+
+###
+
+POST http://127.0.0.1:8000/user/create
+Content-Type: application/json
+
+{
+    "name": "adam",
+    "email": "adam@ibm.com",
+    "phone": "111222333"
+}
+
+###
+
+POST http://127.0.0.1:8000/user/create
+Content-Type: application/json
+
+{
+    "name": "franek",
+    "email": "franek@ibm.com"
+}
+
+###
+
+POST http://127.0.0.1:8000/user/create
+Content-Type: application/json
+
+{
+    "name": "stefan",
+    "email": "stefan@microsoft.com"
+}
+
+###

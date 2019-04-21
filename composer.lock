@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04cb434bb1f5e897fbf870cb06472864",
+    "content-hash": "b3a008a235a89befcb25d1cddfbead2d",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -3117,6 +3117,49 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2019-03-30T15:58:42+00:00"
+        },
+        {
+            "name": "wmde/email-address",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wmde/email-address.git",
+                "reference": "2a92cc86b9b338c08aa115cfe7624bfb7846d613"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wmde/email-address/zipball/2a92cc86b9b338c08aa115cfe7624bfb7846d613",
+                "reference": "2a92cc86b9b338c08aa115cfe7624bfb7846d613",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "mediawiki/mediawiki-codesniffer": "~13.0",
+                "ockcyp/covers-validator": "~0.6",
+                "phpstan/phpstan": "~0.8.0",
+                "phpunit/phpunit": "~6.2",
+                "slevomat/coding-standard": "~4.0",
+                "squizlabs/php_codesniffer": "~3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "WMDE\\EmailAddress\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Email Address value object written in PHP 7",
+            "time": "2018-02-07T16:29:45+00:00"
         },
         {
             "name": "zendframework/zend-code",
